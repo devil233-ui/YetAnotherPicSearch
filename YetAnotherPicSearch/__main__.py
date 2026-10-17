@@ -34,6 +34,7 @@ from nonebot_plugin_alconna.uniseg import (
 from nonebot_plugin_waiter import waiter
 from PicImageSearch import Network
 
+from ._ctx import current_image_url
 from .cache import msg_cache
 from .config import config
 from .registry import registered_search_func
@@ -291,7 +292,11 @@ async def handle_single_image(
     search_func = registered_search_func[mode].func
 
     while search_func is not None:
-        result = await search_func(file, client, mode)
+        token = current_image_url.set(seg.url or None)
+        try:
+            result = await search_func(file, client, mode)
+        finally:
+            current_image_url.reset(token)
         messages, search_func = result if isinstance(result, tuple) else (result, None)
         search_results.extend([msg.copy() for msg in messages])
         await send_msgs(messages, target, index, display_fav)

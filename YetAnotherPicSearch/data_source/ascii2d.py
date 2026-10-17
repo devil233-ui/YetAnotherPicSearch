@@ -10,6 +10,7 @@ from nonebot_plugin_alconna.uniseg import UniMessage
 from PicImageSearch import Ascii2D
 from PicImageSearch.model import Ascii2DResponse
 
+from .._ctx import current_image_url
 from ..config import config
 from ..registry import SearchFunctionReturnType, search_function
 from ..utils import async_lock, combine_message, get_image_bytes_by_url, shorten_url
@@ -23,7 +24,15 @@ async def ascii2d_search(
     _mode: str,
 ) -> SearchFunctionReturnType:
     ascii2d_color = Ascii2D(base_url=config.ascii2d_base_url, client=client)
-    color_res = await ascii2d_color.search(file=file)
+    # Ascii2D 的文件上传接口（/search/file）被 Cloudflare 硬拦（403 挑战页），
+    # 但 URL 搜索接口（/search/uri）正常，故优先用图片原始 URL 搜索。
+    color_res = None
+    image_url = current_image_url.get()
+    if image_url:
+        with logged_suppress("Ascii2D URL 模式失败，回退文件上传", Exception):
+            color_res = await ascii2d_color.search(url=image_url)
+    if not color_res or not color_res.raw:
+        color_res = await ascii2d_color.search(file=file)
     if not color_res.raw:
         return [UniMessage.text("Ascii2D 暂时无法使用")]
 

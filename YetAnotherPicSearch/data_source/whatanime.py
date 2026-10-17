@@ -22,43 +22,51 @@ async def whatanime_search(
     whatanime = TraceMoe(client=client)
     res = await whatanime.search(file=file)
     if res and res.raw:
-        time = res.raw[0].From
+        item = res.raw[0]
+        time = item.From
         minutes = math.floor(time / 60)
         seconds = math.floor(time % 60)
         time_str = f"{minutes:02d}:{seconds:02d}"
+        episode = item.episode or 1
 
-        if res.raw[0].isAdult:
-            thumbnail = await handle_img(
-                res.raw[0].cover_image,
-                config.hide_img or config.hide_img_when_whatanime_r18,
-            )
-        else:
-            thumbnail = await handle_img(
-                res.raw[0].cover_image,
-            )
-
-        chinese_title = res.raw[0].title_chinese
-        native_title = res.raw[0].title_native
-
-        start_date = date_to_str(res.raw[0].start_date)
-        end_date = ""
-        if (end_date_year := res.raw[0].end_date["year"]) and end_date_year > 0:
-            end_date = date_to_str(res.raw[0].end_date)
-        episode = res.raw[0].episode or 1
         res_list = [
-            f"WhatAnime ({res.raw[0].similarity}%)",
+            f"WhatAnime ({item.similarity}%)",
             f"该截图出自第 {episode} 集的 {time_str}",
-            thumbnail,
-            native_title,
-            chinese_title if chinese_title != native_title else "",
-            f"类型：{res.raw[0].type}-{res.raw[0].format}",
-            f"开播：{start_date}",
-            f"完结：{end_date}" if end_date else "",
         ]
+
+        # AniList 侧被限流/封禁时拿不到标题与封面，此时只展示本地可得的
+        # 文件名、集数与时间，避免因空字典直接抛异常导致整条搜索失败。
+        if item.title_native or item.title_chinese:
+            thumbnail = None
+            if item.cover_image:
+                thumbnail = await handle_img(
+                    item.cover_image,
+                    item.isAdult
+                    and (config.hide_img or config.hide_img_when_whatanime_r18),
+                )
+
+            chinese_title = item.title_chinese
+            native_title = item.title_native
+            start_date = date_to_str(item.start_date) if item.start_date else ""
+            end_date = ""
+            if (end_year := item.end_date.get("year")) and end_year > 0:
+                end_date = date_to_str(item.end_date)
+            res_list += [
+                thumbnail,
+                native_title,
+                chinese_title if chinese_title != native_title else "",
+                f"类型：{item.type}-{item.format}",
+                f"开播：{start_date}",
+                f"完结：{end_date}" if end_date else "",
+            ]
+        else:
+            res_list.append(f"文件名：{item.filename}")
+
         return [combine_message(res_list)]
 
     return [UniMessage.text("WhatAnime 暂时无法使用")]
 
 
 def date_to_str(date: dict[str, Any]) -> str:
-    return f"{date['year']}-{date['month']}-{date['day']}"
+    # AniList 的日期字段可能缺日/月，拼接时跳过空值而不是抛 KeyError
+    return "-".join(str(date[key]) for key in ("year", "month", "day") if date.get(key))
