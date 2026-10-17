@@ -50,7 +50,7 @@ _✨ 基于 [NoneBot2](https://github.com/nonebot/nonebot2) 与 [PicImageSearch]
 主要受到 [cq-picsearcher-bot](https://github.com/Tsuk1ko/cq-picsearcher-bot) 的启发。我只需要基础的搜图功能，于是忍不住自己也写了一个，用来搜图、搜番、搜本子。
 
 目前支持的搜图服务：  
-[Ascii2D](https://ascii2d.net/) | [Baidu](https://graph.baidu.com/) | [E-Hentai](https://e-hentai.org/) | [ExHentai](https://exhentai.org/) | [Google](https://www.google.com/imghp) | [Iqdb](https://iqdb.org/) | [SauceNAO](https://saucenao.com/) | [TraceMoe](https://trace.moe/) | [Yandex](https://yandex.com/images/search)
+[Ascii2D](https://ascii2d.net/) | [Baidu](https://graph.baidu.com/) | [Copyseeker](https://copyseeker.net/) | [E-Hentai](https://e-hentai.org/) | [ExHentai](https://exhentai.org/) | [Google](https://www.google.com/imghp) | [Iqdb](https://iqdb.org/) | [SauceNAO](https://saucenao.com/) | [TraceMoe](https://trace.moe/) | [Yandex](https://yandex.com/images/search)
 
 ## 💿 安装
 
@@ -162,33 +162,12 @@ plugins = [
     <img src="docs/images/image03.jpg" width="32%" />
 </p>
 
-## 📞 联系
-
-<!--
-### NekoAria
-
-暂无
--->
-
-### LgCookie
-
-QQ：3076823485  
-Telegram：[@lgc2333](https://t.me/lgc2333)  
-吹水群：[168603371](https://qm.qq.com/q/EikuZ5sP4G)  
-邮箱：<lgc2333@126.com>
-
 ## 💡 鸣谢
 
 - [cq-picsearcher-bot](https://github.com/Tsuk1ko/cq-picsearcher-bot)
 - [PicImageSearch](https://github.com/kitUIN/PicImageSearch)
 - [NoneBot2](https://github.com/nonebot/nonebot2)
 - [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
-
-## 💰 赞助
-
-**[赞助我](https://blog.lgc2333.top/donate)**
-
-感谢大家的赞助！你们的赞助将是我继续创作的动力！
 
 ## ⭐ Star History
 
